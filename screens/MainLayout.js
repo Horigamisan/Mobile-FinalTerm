@@ -19,6 +19,7 @@ import {
     Home,
     Search,
     CartTab,
+    CartTabBottom,
     Favourite,
     Notification
 } from "../screens"
@@ -245,7 +246,7 @@ export const MainLayout = ({drawerAnimationStyle, navigation, selectedTab, setSe
                             borderRadius: SIZES.radius,
                             justifyContent: 'center',
                         }}
-                        onPress={() => console.log("Right")}
+                        onPress={() => navigation.navigate("DetailProfile")}
                     >
                         <Image
                             source={dummyData.myProfile?.profile_image}
@@ -281,7 +282,7 @@ export const MainLayout = ({drawerAnimationStyle, navigation, selectedTab, setSe
                             >
                                 {item.label == constants.screens.home && <Home />}
                                 {item.label == constants.screens.search && <Search />}
-                                {item.label == constants.screens.cart && <CartTab />}
+                                {item.label == constants.screens.cart && <CartTabBottom />}
                                 {item.label == constants.screens.favourite && <Favourite />}
                                 {item.label == constants.screens.notification && <Notification />}
 

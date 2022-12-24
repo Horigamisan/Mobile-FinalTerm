@@ -132,27 +132,32 @@ const track_order_status = [
     {
         id: 1,
         title: "Order Confirmed",
-        sub_title: "Your order has been received"
+        checkOrder: "unverified",
+        sub_title: "Đơn hàng bạn đã được shop nhận"
     },
     {
         id: 2,
         title: "Order Prepared",
-        sub_title: "Your order has been prepared"
+        checkOrder: "verified",
+        sub_title: "Đơn hàng đang được chuẩn bị"
     },
     {
         id: 3,
         title: "Delivery in Progress",
-        sub_title: "Hang on! Your food is on the way"
+        checkOrder: "in progress",
+        sub_title: "Xin vui lòng chờ đợi, đơn hàng đang được giao"
     },
     {
         id: 4,
         title: "Delivered",
-        sub_title: "Enjoy your meal!"
+        checkOrder: "delivered",
+        sub_title: "Đã giao hàng thành công"
     },
     {
         id: 5,
         title: "Rate Us",
-        sub_title: "Help us improve our service"
+        checkOrder: "rated",
+        sub_title: "Hãy đánh giá cho chúng tôi"
     }
 ]
 

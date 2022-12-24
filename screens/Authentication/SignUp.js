@@ -3,7 +3,8 @@ import {
     View,
     Text,
     TouchableOpacity,
-    Image
+    Image,
+    Button
 } from 'react-native';
 
 import {AuthLayout} from "../";
@@ -13,6 +14,10 @@ import {FONTS, SIZES, COLORS, icons} from "../../constants";
 import {FormInput, TextButtonAuth, TextIconButton} from "../../components"
 
 import {utils} from "../../utils"
+import axios from 'axios';
+import AxiosUtil from '../../utils/AxiosUtil';
+import {DateTimePickerAndroid } from '@react-native-community/datetimepicker';
+
 
 const SignUp = ({navigation}) => {
 
@@ -20,10 +25,12 @@ const SignUp = ({navigation}) => {
     const [username, setUsername] = React.useState("")
     const [password, setPassword] = React.useState("")
     const [showPass, setShowPass] = React.useState(false)
+    const [tel, setTel] = React.useState("")
 
     const [emailError, setEmailError] = React.useState("")
     const [usernameError, setUsernameError] = React. useState("")
     const [passwordError, setPasswordError] = React.useState("")
+    const [date, setDate] = React.useState(new Date())
 
     function isEnableSignIn() {
         return email != "" && username != "" && password != "" && emailError=="" && passwordError == "" && usernameError == ""
@@ -96,6 +103,36 @@ const SignUp = ({navigation}) => {
                         </View>
                     }
                 />
+
+                <FormInput
+                    label="Số điện thoại"
+                    containerStyle={{
+                        marginTop: SIZES.radius
+                    }}
+                    onChange={(value) => {
+                        setTel(value)
+                    }}
+                    errorMsg={passwordError}
+                    appendComponent={
+                        <TouchableOpacity
+                            style={{
+                                width: 40,
+                                alignItems:'flex-end',
+                                justifyContent: 'center'
+                            }}
+                        >
+                            <Image
+                                source={username == "" || (username != "" && usernameError == "") ? icons.correct : icons.cross}
+                                style ={{
+                                    height: 20,
+                                    width: 20,
+                                    tintColor: username == "" ? COLORS.gray : (username != "" && usernameError == "") ? COLORS.green : COLORS.red
+                                }}
+                            />        
+                        </TouchableOpacity>
+                    }
+                />
+
                 <FormInput
                     label="Mật khẩu"
                     secureTextEntry={!showPass}
@@ -128,6 +165,61 @@ const SignUp = ({navigation}) => {
                         </TouchableOpacity>
                     }
                 />
+
+               
+
+               {/* Date time picker button*/}
+                <View
+                    style={{
+                        flexDirection: 'row',
+                        marginTop: SIZES.radius
+                    }}
+                >
+                    <View
+                        style={{
+                            flex: 1
+                        }}
+                    >
+                        <Text style={{color: COLORS.gray, ...FONTS.body4}}>Ngày sinh</Text>
+                    </View>
+                    <View
+                        style={{
+                            flex: 1,
+                            alignItems: 'flex-end'
+                        }}
+                    >
+                        <TouchableOpacity
+                            style={{
+                                flexDirection: 'row',
+                                alignItems: 'center'
+                            }}
+                            onPress={(currentMode) => {
+                                console.log(date)
+                                DateTimePickerAndroid.open({
+                                value: date,
+                                onChange: (event, selectedDate) => {
+                                    const currentDate = selectedDate;
+                                    setDate(currentDate);
+                                },
+                                mode: currentMode,
+                                is24Hour: true,
+                                })}
+                            }
+                        >
+                            <Text style={{color: COLORS.gray, ...FONTS.body3}}>{date.toDateString()}</Text>
+                            <Image
+                                source={icons.calendar}
+                                style={{
+                                    marginLeft: 5,
+                                    height: 20,
+                                    width: 20,
+                                    tintColor: COLORS.gray
+                                }}
+                            />
+                        </TouchableOpacity>
+                    </View>
+                </View>
+
                 <TextButtonAuth
                     label = "Đăng ký"
                     disabled={isEnableSignIn() ? false: true}
@@ -138,7 +230,21 @@ const SignUp = ({navigation}) => {
                         borderRadius: SIZES.radius,
                         backgroundColor: isEnableSignIn() ? COLORS.primary : COLORS.transparentPrimary
                     }} 
-                    onPress ={() => navigation.navigate("Otp")}
+                    onPress ={() => {
+                        axios.post('http://10.0.2.2:3001/auth/signup', {
+                            email: email,
+                            password: password,
+                            name: username,
+                            birthDate: date,
+                            tel: tel
+                            }).then((response) => {
+                                console.log(response.data)
+                                navigation.navigate("Otp", {otp: response.data.otp, token: response.data.token})
+                            }).catch((error) => {
+                                setEmailError(error.message)
+                                console.log(error)
+                        })
+                    }}
                 />
 
                 <View

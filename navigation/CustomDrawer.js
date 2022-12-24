@@ -105,7 +105,7 @@ const CustomDrawerContent = ({ navigation , selectedTab, setSelectedTab, profile
                         marginTop: SIZES.radius,
                         alignItems: 'center',
                     }}
-                    onPress={() => console.log("Profile")}
+                    onPress={() => navigation.navigate("DetailProfile")}
                 >
                     <Image
                         source={dummyData.myProfile?.profile_image}
@@ -203,8 +203,9 @@ const CustomDrawerContent = ({ navigation , selectedTab, setSelectedTab, profile
                         }}
                     />
                     <CustomDrawerItem
-                        label="Tình trạng đơn hàng"
+                        label="Lịch sử đặt hàng"
                         icon={icons.location}
+                        onPress={() => navigation.navigate("OrderHistory")}
                     />
                     <CustomDrawerItem
                         label="Mã giảm giá"

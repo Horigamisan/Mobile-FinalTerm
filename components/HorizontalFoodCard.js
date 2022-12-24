@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, Image, TextInput, StyleSheet, FlatList } 
 import { FONTS, COLORS, SIZES, icons, images, dummyData } from "../constants";
 
 const HorizontalFoodCard = ({ containerStyle, imageStyle, item, onPress }) => {
+    console.log(item.images);
     return (
         <TouchableOpacity
         style={{
@@ -16,11 +17,11 @@ const HorizontalFoodCard = ({ containerStyle, imageStyle, item, onPress }) => {
         >
         {/* Image */}
         <Image
-            source={item.image}
+            source={{uri: item.images}}
             resizeMode="cover"
             style={{
-            width: 100,
-            height: 100,
+            width: 80,
+            height: 80,
             borderRadius: SIZES.radius,
             ...imageStyle,
             }}
@@ -35,7 +36,7 @@ const HorizontalFoodCard = ({ containerStyle, imageStyle, item, onPress }) => {
             </View>
             {/* Price*/}
             <View style={{ flexDirection: "row", marginTop: SIZES.radius }}>
-            <Text style={{ ...FONTS.h3, fontSize: 17 }}>${item.price.toFixed(2)}</Text>
+            <Text style={{ ...FONTS.h3, fontSize: 17 }}>{item.price} VND</Text>
             </View>
             {/* Calories */}
             {/* <View

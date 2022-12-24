@@ -39,7 +39,7 @@ export default FooterTotal = ({subTotal, shippingFee, total, onPress}) => {
                     }}
                 >   
                     <Text style={{flex: 1, ...FONTS.body3}}>Tổng hàng</Text>
-                    <Text style={{...FONTS.h3}}>${subTotal.toFixed(2)}</Text>
+                    <Text style={{...FONTS.h3}}>{subTotal} VND</Text>
                 </View>
                 {/* Shipping Fee */}
                 <View
@@ -50,7 +50,7 @@ export default FooterTotal = ({subTotal, shippingFee, total, onPress}) => {
                     }}
                 >
                     <Text style={{flex: 1, ...FONTS.body3}}>Tiền phí vận chuyển</Text>
-                    <Text style={{...FONTS.h3}}>${shippingFee.toFixed(2)}</Text>
+                    <Text style={{...FONTS.h3}}>{shippingFee} VND</Text>
                 </View>
                 {/* Line Divider */}
                 <LineDivider />
@@ -62,7 +62,7 @@ export default FooterTotal = ({subTotal, shippingFee, total, onPress}) => {
                     }}
                 >
                     <Text style={{flex: 1, ...FONTS.h2}}>Tổng cộng:</Text>
-                    <Text style={{...FONTS.h2}}>${total.toFixed(2)}</Text>
+                    <Text style={{...FONTS.h2}}>{total} VND</Text>
                 </View>
                 {/* Button */}
                 <TextButton

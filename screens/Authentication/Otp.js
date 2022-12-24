@@ -7,8 +7,12 @@ import OTPInputView from '@twotalltotems/react-native-otp-input'
 import {FONTS, SIZES, COLORS} from "../../constants";
 import {TextButtonAuth} from "../../components";
 import {AuthLayout} from "../";
+import axios from 'axios';
+import AxiosUtil from '../../utils/AxiosUtil';
+import { get } from 'react-native/Libraries/Utilities/PixelRatio';
 
-const Otp = ({navigation}) => {
+
+const Otp = ({navigation, route}) => {
 
     const [timer, setTimer] = React.useState(60)
 
@@ -84,7 +88,10 @@ const Otp = ({navigation}) => {
                             color: COLORS.primary,
                             ...FONTS.h3
                         }}
-                        onPress={()=> setTimer(60)}
+                        onPress={()=> {
+                            // axios,get("http//10.0.2.2:3001/auth/resend-otp").th
+                            setTimer(60)
+                        }}
                     />
                 </View>
            </View>
@@ -98,7 +105,31 @@ const Otp = ({navigation}) => {
                         borderRadius: SIZES.radius,
                         backgroundColor: COLORS.primary
                     }}
-                    onPress={() => navigation.navigate("SignIn")}
+                    onPress={() => {
+                        var otp = route.params?.otp;
+                        axios.post(("http://10.0.2.2:3001/auth/verify-account"), {
+                            otp: otp
+                        },{
+                            headers: {
+                                Authorization: `Bearer ${route.params?.token}`
+                            }
+                        }).then((response) => {
+                            console.log(response.data);
+                            AxiosUtil.setToken(route.params?.token).then(() => {
+                                axios.get("http://10.0.2.2:3001/user/profile",{headers: {
+                                        Authorization: `Bearer ${route.params?.token}`
+                                    }}).then((response) => {
+                                        AxiosUtil.setProfile(response.data).then(() => {
+                                        navigation.navigate("Home")
+                                    })
+                                }).catch((error) => {
+                                    console.log(error);
+                                })
+                            })
+                        }).catch((error) => {
+                            console.log(error);
+                        })
+                    }}
                 />
                 <View
                     style={{

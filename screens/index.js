@@ -35,6 +35,16 @@ import ForgotPassword from "./Authentication/ForgotPassword"
 
 import Success from "./Cart/Success"
 
+import Checkout from "./Cart/Checkout"
+
+import CartTabBottom from "./Cart/CartTabBottom"
+
+import DetailProfile from "./Profile/DetailProfile";
+
+import DeliveryStatus from "./Delivery/DeliveryStatus";
+
+import OrderHistory from "./Orders/OrderHistory";
+
 export {
     MainLayout,
     Home,
@@ -50,5 +60,10 @@ export {
     SignUp,
     Otp,
     ForgotPassword,
-    Success
+    Success,
+    Checkout,
+    CartTabBottom,
+    DetailProfile,
+    DeliveryStatus,
+    OrderHistory
 }

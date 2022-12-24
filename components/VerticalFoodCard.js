@@ -52,11 +52,11 @@ const VerticalFoodCard = ({ containerStyle, item, onPress }) => {
                 }}
             >
                 <Image
-                    source={item.image}
+                    source={{uri: item.images}}
                     resizeMode="cover"
                     style={{
-                        width: "100%",
-                        height: "100%",
+                        width: 100,
+                        height: 100,
                     }}
                 />
             </View>
@@ -83,7 +83,7 @@ const VerticalFoodCard = ({ containerStyle, item, onPress }) => {
                         marginTop: SIZES.radius,
                         ...FONTS.h2
                     }}>
-                        ${item.price}
+                        {item.price} VND
                     </Text>
                 </View>
         </TouchableOpacity>

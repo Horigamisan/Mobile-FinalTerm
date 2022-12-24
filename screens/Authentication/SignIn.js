@@ -150,11 +150,13 @@ const SignIn = ({navigation}) => {
                                         Authorization: 'Bearer ' + token //the token is a variable which holds the token
                                     }
                                 }).then((response) => {
-                                    console.log("Profile data: "+response.data)
-                                    AxiosUtil.setProfile(response.data)
+                                    console.log("Profile data: "+response.data + " " + token)
+                                    AxiosUtil.setProfile(response.data).then(() => {
+                                        navigation.navigate("Home")
+                                    })
                                 })
-                                navigation.navigate("Home")
                             }).catch((error) => {
+                                console.log(error)
                                 setEmailError("Email hoặc mật khẩu không đúng")
                         })
                         console.log("Check")

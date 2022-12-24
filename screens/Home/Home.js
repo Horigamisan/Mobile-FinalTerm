@@ -23,7 +23,8 @@ const Section = ({title, children, onPress}) => {
                 marginHorizontal: SIZES.padding,
                 flexDirection: 'row',
                 marginTop: 30,
-                marginBottom: 20
+                marginBottom: 20,
+                marginLeft: 10,
             }}>
                 <Text style={{flex: 1, ...FONTS.h3}}>{title}</Text>
 
@@ -47,8 +48,9 @@ const Home = (navigation) => {
     const [popular, setPopular] = React.useState([]);
     const [showFilterModal, setShowFilterModal] = React.useState(false);
     let products = [];
+    const [menu, setMenu] = React.useState([]);
     //Get product
-    if(products.length == 0){
+    if(menu.length == 0){
         AxiosUtil.getToken().then((token) => {
             console.log("Token product: " + token);
                 axios.get('http://10.0.2.2:3001/products/today', {
@@ -56,61 +58,58 @@ const Home = (navigation) => {
                         Authorization: "Bearer " + token
                     }
                 }).then((response) => {
-                    // response.data.products.forEach((product) => {
-                    //     console.log("Product: " + product.name);
-                    // });
                     products = response.data.products;
+                    console.log("Product: " + products);
+                    let tempMenu = [
+                        {
+                            id: 1,
+                            name: "Tính năng",
+                            list: [...products]
+                        },
+                        {
+                            id: 2,
+                            name: "Gần bạn",
+                            list: [
+                                //if index product is even
+                                ...products.filter((a, index) => index % 2 == 0)
+                            ]
+                        },
+                        {
+                            id: 3,
+                            name: "Phổ biến",
+                            list: [
+                                ...products.filter((a, index) => index % 3 == 0)
+                            ]
+                        },
+                        {
+                            id: 4,
+                            name: "Mới nhất",
+                            list: [
+                            ]
+                        },
+                        {
+                            id: 5,
+                            name: "Xu hướng",
+                            list: [
+                                ...products.filter((a, index) => index % 2 != 0)
+                            ]
+                        },
+                        {
+                            id: 6,
+                            name: "Đề xuất",
+                            list: [
+                                ...products.filter((a, index) => index % 3 != 0)
+                            ]
+                        },
+                    ];
+                    setMenu(tempMenu);
+                    
                 }).catch((error) => {
                     console.log("Error product: " + error);
                 });
         });
     }
     
-    const menu = [
-        {
-            id: 1,
-            name: "Tính năng",
-            list: [
-                hamburger, hotTacos, vegBiryani,
-            ]
-        },
-        {
-            id: 2,
-            name: "Gần bạn",
-            list: [
-                hamburger, vegBiryani, wrapSandwich,
-            ]
-        },
-        {
-            id: 3,
-            name: "Phổ biến",
-            list: [
-                hamburger, hotTacos, wrapSandwich,
-            ]
-        },
-        {
-            id: 4,
-            name: "Mới nhất",
-            list: [
-                hamburger, hotTacos, vegBiryani,
-            ]
-        },
-        {
-            id: 5,
-            name: "Xu hướng",
-            list: [
-                hamburger, vegBiryani, wrapSandwich,
-            ]
-        },
-        {
-            id: 6,
-            name: "Đề xuất",
-            list: [
-                hamburger, hotTacos, wrapSandwich,
-            ]
-        },
-    
-    ]
     
     React.useEffect(() => {
         handlerChangeCategory(selectedCategoryId, selectedMenuType)
@@ -121,15 +120,16 @@ const Home = (navigation) => {
         // Retreive the popular menu
         let selectedPopular = menu.find(a => a.name == "Phổ biến")
         // Set the popular menu based on categoryId
-        setPopular(selectedPopular?.list.filter(a => a.categories.includes(categoryId)))
+        setPopular(selectedPopular?.list.filter(a => a.category.includes(categoryId)))
         // Retreive the recommended menu 
         let selectedRecommend = menu.find(a => a.name == "Đề xuất")
         // Set the recommended menu based on categoryId
-        setRecommends(selectedRecommend?.list.filter(a => a.categories.includes(categoryId)))
+        setRecommends(selectedRecommend?.list.filter(a => a.category.includes(categoryId)))
         // Filter menu based on menuTypeId
+        console.log("Menu: " + menu);
         let selectedMenu = menu.find(a => a.id == menuTypeId)
         // Set Menu based on categoryId
-        setMenuList(selectedMenu?.list.filter(a => a.categories.includes(categoryId)))
+        setMenuList(selectedMenu?.list.filter(a => a.category.includes(categoryId)))
     }
 
     // Render Search
@@ -230,7 +230,7 @@ const Home = (navigation) => {
             >
                 <FlatList
                     data={recommends}
-                    keyExtractor={item => `${item.id}`}
+                    keyExtractor={item => `${item._id}`}
                     horizontal
                     showsHorizontalScrollIndicator={false}
                     renderItem={({item, index}) => {
@@ -245,9 +245,8 @@ const Home = (navigation) => {
                             alignItems: 'center',
                         }}
                         imageStyle={{
-                            marginTop: 35,
-                            height: 150,
-                            width: 150
+                            height: 100,
+                            width: 100
                         }}
                         item={item}
                         onPress={() => navigation.navigate("Food", {item : item})}
@@ -267,7 +266,7 @@ const Home = (navigation) => {
             >
                 <FlatList
                     data={popular}
-                    keyExtractor={item => `${item.id}`}
+                    keyExtractor={item => `${item._id}`}
                     horizontal
                     showsHorizontalScrollIndicator={false}
                     renderItem={({item, index}) => {
@@ -402,7 +401,7 @@ const Home = (navigation) => {
             {/* List */}
             <FlatList
                 data={menuList}
-                keyExtractor={item => `${item.id}`}
+                keyExtractor={item => `${item._id}`}
                 showsVerticalScrollIndicator={false}
                 ListHeaderComponent={
                     <View>
@@ -428,7 +427,6 @@ const Home = (navigation) => {
                                 marginBottom: SIZES.radius
                             }}
                             imageStyle={{
-                                marginTop: 20,
                                 height: 110,
                                 width: 110
                             }}

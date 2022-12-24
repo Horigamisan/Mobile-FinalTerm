@@ -20,6 +20,8 @@ import CartQuantityButton from '../../components/CartQuantityButton';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { IconLabel, StepperInput, LineDivider, TextButton } from '../../components';
 import { useNavigation } from '@react-navigation/native';
+import axios from 'axios';
+import AxiosUtil from '../../utils/AxiosUtil';
 
 const FoodDetail = ({navigation, route}) => {
     var item = route?.params?.item || '';
@@ -57,7 +59,7 @@ const FoodDetail = ({navigation, route}) => {
                 }
                 rightComponent={
                     <CartQuantityButton
-                        quantity={3}
+                        quantity=""
                         onPress={() => navigation.navigate('Cart')}
                     />
                 }
@@ -128,7 +130,7 @@ const FoodDetail = ({navigation, route}) => {
                     </View>
                     {/* Food Image */}
                     <Image
-                        source={footItem?.image}
+                        source={{uri: footItem?.images}}
                         resizeMode="contain"
                         style={{
                             width: "100%",
@@ -161,7 +163,7 @@ const FoodDetail = ({navigation, route}) => {
                         {footItem?.description}
                     </Text>
 
-                    {/* Ratings, Duration & Shipping*/}
+                    {/* Ratings, Sold quantity & Shipping*/}
                     <View
                         style={{
                             flexDirection: 'row',
@@ -174,20 +176,20 @@ const FoodDetail = ({navigation, route}) => {
                                 backgroundColor: COLORS.primary
                             }}
                             icon={icons.star}
-                            label={footItem?.rating}
+                            label={footItem?.sumOfRating}
                             labelStyle={{
                                 color: COLORS.white,
                             }}
                         />
-                        {/* Duration */}
+                        {/* Sold quantity */}
                         <IconLabel
                             containerStyle={{
                                 marginLeft: SIZES.radius,
                                 paddingHorizontal: 0
                             }}
-                            icon={icons.clock}
+                            icon={icons.discount}
                             iconStyle={{tintColor: COLORS.black}}
-                            label="30 - 45 min"
+                            label={footItem?.soldQuantity}
                         />
                         {/* Shipping */}
                         <IconLabel
@@ -239,13 +241,44 @@ const FoodDetail = ({navigation, route}) => {
                         backgroundColor: COLORS.primary
                     }}
                     label="Mua ngay"
-                    label2={`$${quantity * footItem?.price}`}
-                    onPress={() => navigation.navigate("Cart")}
+                    label2={`${quantity * footItem?.price} VND`}
+                    onPress={() => {
+                        for(let i = 0; i < quantity; i++){
+                            console.log(footItem?._id);
+                            console.log(token);
+                            axios.patch('http://10.0.2.2:3001/cart/add',{productId: footItem?._id}, {
+                                headers: {
+                                    Authorization: 'Bearer ' + token //the token is a variable which holds the token
+                                }
+                            }).then((response) => {
+                                console.log(response.data);
+                            }
+                            ).catch((error) => {
+                                console.log(error);
+                            })
+                        }
+                        //Get cart
+                        axios.get('http://10.0.2.2:3001/cart', {
+                            headers: {
+                                Authorization: 'Bearer ' + token //the token is a variable which holds the token
+                            }
+                        }).then((response) => {
+                            console.log("Cart data: "+response.data + " " + token)
+                            navigation.navigate("Cart", {item: response.data.cart, token: token})
+                        }).catch((error) => {
+                            console.log("Cart error: "+error + " " + token)
+                        })
+
+                    }}
                 />
             </View>
         )
     }
-
+    console.log(quantity);
+    var token = "";
+    AxiosUtil.getToken().then((data) => {
+        token = data;
+    })
     return (
         <View 
             style={{

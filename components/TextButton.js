@@ -2,14 +2,14 @@ import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TouchableWithoutFeedback, Modal, Image } from "react-native";
 import {COLORS, FONTS, SIZES, constants, icons} from "../constants";
 
-const TextButton = ({label, buttonContainerStyle, labelStyle, onPress, label2="", label2Style}) => {
+const TextButton = ({label, buttonContainerStyle, labelStyle, onPress, label2="", label2Style, backgroundColor= COLORS.primary}) => {
     return (
         <TouchableOpacity
             style={{    
                 alignItems: 'center',
                 justifyContent: 'center',
                 ...buttonContainerStyle,
-                backgroundColor: COLORS.primary,
+                backgroundColor: backgroundColor,
             }}
             onPress={onPress}
         >

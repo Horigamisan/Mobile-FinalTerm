@@ -17,14 +17,60 @@ import {
 } from '../../components';
 import { FONTS, SIZES, COLORS, icons, dummyData} from '../../constants';
 import {SwipeListView} from 'react-native-swipe-list-view';
+import axios from 'axios';
+import AxiosUtil from '../../utils/AxiosUtil';
+import { useNavigation } from '@react-navigation/native';
 
-const CartTab = ({navigation}) => {
+const CartTab = ({navigation, route}) => {
+    // var item = (route?.params?.item || '');
+    // var token = (route?.params?.token || '');
+    navigation = navigation ? navigation : useNavigation();
 
-    const [myCartList, setMyCartList] = React.useState(dummyData.myCart);
+    const [token, setToken] = React.useState(route?.params?.token || '');
+    const [item, setItem] = React.useState(route?.params?.item || '');
+
+    if(item == ''){
+        AxiosUtil.getToken().then((data) => {
+            // token = data;
+            setToken(data);
+            axios.get('http://10.0.2.2:3001/cart', {
+                headers: {
+                    Authorization: 'Bearer ' + token //the token is a variable which holds the token
+                }
+            }).then((response) => {
+                setItem(response.data.cart)
+                console.log(response.data.cart);
+            }).catch((error) => {
+                console.log("Cart error 1: "+error + " " + token)
+            })
+        })
+
+    }
+
+    const [myCart, setMyCart] = React.useState([]);
+    if(item != '' ){
+        item.forEach(element => {
+            //filter if item is not in myCart
+            if(myCart.filter(item => item._id === element.product._id).length == 0){
+                //add item to myCart
+                myCart.push({...element.product, quantity: element.quantity});
+                console.log('Element item', element);
+            }
+        });
+        myCart.forEach(element => {
+            console.log('Element', element);
+        });
+    }
+
+    console.log('My cart 1', myCart);
+
+    const [myCartList, setMyCartList] = React.useState(myCart);
+
+    
 
     function removeMyCartHandler(id) {
         let myNewCartList = [...myCartList];
-        const index = myNewCartList.findIndex(item => item.id === id);
+        const index = myNewCartList.findIndex(item => item._id === id);
 
         myNewCartList.splice(index, 1);
         setMyCartList(myNewCartList);
@@ -34,7 +80,7 @@ const CartTab = ({navigation}) => {
     function updateQuantityHandler(newQty, id){
         if(newQty < 1) return;
         const newMyCartList = myCartList.map(item => (
-            item.id === id ? {...item, qty: newQty} : item
+            item._id === id ? {...item, quantity: newQty} : item
         ))
         setMyCartList(newMyCartList);
     }
@@ -70,7 +116,7 @@ const CartTab = ({navigation}) => {
                 }
                 rightComponent={
                     <CartQuantityButton
-                        quantity={3}
+                        quantity={myCartList.length}
                     />
                 }
             >
@@ -83,7 +129,7 @@ const CartTab = ({navigation}) => {
         return (
             <SwipeListView
                 data={myCartList}
-                keyExtractor={item => `${item.id}`}
+                keyExtractor={item => `${item._id}`}
                 contentContainerStyle={{
                     marginTop: SIZES.radius,
                     paddingHorizontal: SIZES.padding,
@@ -137,19 +183,43 @@ const CartTab = ({navigation}) => {
                                     color: COLORS.primary
                                 }}
                             >
-                                ${data.item.price.toFixed(2)}
+                                {data.item.price} VND
                             </Text>
                         </View>
                         {/* Quantity */}
                         <StepperInput
                             containerStyle={{
                                 height: 50,
-                                width: 125,
+                                width: 130,
                                 backgroundColor: COLORS.white,
                             }}
-                            value={data.item.qty}
-                            onAdd={() => updateQuantityHandler(data.item.qty + 1, data.item.id)}
-                            onMinus={() => updateQuantityHandler(data.item.qty - 1, data.item.id)}
+                            value={data.item.quantity}
+                            onAdd={() => {
+                                axios.patch('http://10.0.2.2:3001/cart/add',{productId: data.item._id}, {
+                                    headers: {
+                                        Authorization: 'Bearer ' + token //the token is a variable which holds the token
+                                    }
+                                }).then((response) => {
+                                    console.log("Add to cart success");
+                                }
+                                ).catch((error) => {
+                                    console.log(error);
+                                })
+                                updateQuantityHandler(data.item.quantity + 1, data.item._id)   
+                            }}
+                            onMinus={() => {
+                                axios.patch('http://10.0.2.2:3001/cart/remove',{productId: data.item._id}, {
+                                    headers: {
+                                        Authorization: 'Bearer ' + token //the token is a variable which holds the token
+                                    }
+                                }).then((response) => {
+                                    console.log("Remove from cart success");
+                                }
+                                ).catch((error) => {
+                                    console.log(error);
+                                })
+                                updateQuantityHandler(data.item.quantity - 1, data.item._id)   
+                            }}
                         />
                     </View>
                 )}
@@ -166,14 +236,22 @@ const CartTab = ({navigation}) => {
                             marginRight: 10,
                             tintColor: COLORS.white
                         }}
-                        onPress={() => removeMyCartHandler(data.item.id)}
+                        onPress={() => removeMyCartHandler(data.item._id)}
                     />
                 )}
                             
                 ></SwipeListView>
         )
     }
-                
+    
+    const subTotal = () => {
+        let total = 0;
+        myCartList.forEach(item => {
+            total += item.price * item.quantity;
+        })
+        
+        return total;
+    }
 
     return (
         <View
@@ -188,10 +266,10 @@ const CartTab = ({navigation}) => {
             {renderCartList()}
             {/* Footer */}
             <FooterTotal
-                subTotal={37.97}
-                shippingFee={5.00}
-                total={42.97}
-                onPress={() => navigation.navigate("Success")}
+                subTotal={subTotal()}
+                shippingFee={0}
+                total={subTotal() + 0}
+                onPress={() => navigation.navigate("Checkout", {item: {subTotal: subTotal(), shippingFee: 0, total: subTotal() + 0, token: token}})}
             />
         </View>
     )

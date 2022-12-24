@@ -12,7 +12,12 @@ import {
     SignUp,
     ForgotPassword,
     Otp,
-    Success
+    Success,
+    Checkout,
+    CartTabBottom,
+    DetailProfile,
+    DeliveryStatus,
+    OrderHistory
 } from './screens'
 import CustomDrawer from './navigation/CustomDrawer';
 import useFonts from './hooks/useFonts';
@@ -94,6 +99,31 @@ const App = () => {
                     <Stack.Screen
                         name="Success"
                         component={Success}
+                    />
+
+                    <Stack.Screen
+                        name="Checkout"
+                        component={Checkout}
+                    />
+
+                    <Stack.Screen
+                        name="CartTabBottom"
+                        component={CartTabBottom}
+                    />
+
+                    <Stack.Screen
+                        name="DetailProfile"
+                        component={DetailProfile}
+                    />
+                    
+                    <Stack.Screen
+                        name="DeliveryStatus"
+                        component={DeliveryStatus}
+                    />
+
+                    <Stack.Screen
+                        name="OrderHistory"
+                        component={OrderHistory}
                     />
                 </Stack.Navigator>
             </NavigationContainer>

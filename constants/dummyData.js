@@ -28,18 +28,18 @@ let profiles = [
 
 const categories = [
     {
-        id: 1,
-        name: "Fast Food",
+        id: "food",
+        name: "Đồ ăn",
         icon: require("../assets/icons/burger.png")
     },
     {
-        id: 2,
-        name: "Fruit Item",
+        id: "drink",
+        name: "Đồ uống",
         icon: require("../assets/icons/cherry.png")
     },
     {
         id: 3,
-        name: "Rice Item",
+        name: "Đồ ăn vặt",
         icon: require("../assets/icons/rice.png")
     }
 ]
